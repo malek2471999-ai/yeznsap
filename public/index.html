@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0b141a">
+  <title>Yeznsap – يزنساب</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="screen active">
+      <div class="login-container">
+        <div class="brand">
+          <div class="logo"><img src="logo.svg" width="72" height="72" alt="شعار Yeznsap"></div>
+          <h1>Yeznsap</h1>
+          <p class="subtitle">يزنساب</p>
+        </div>
+
+        <div class="login-box">
+          <div class="auth-badge">بدون رقم هاتف • بدون SMS</div>
+          <h2>تسجيل الدخول</h2>
+          <p class="hint">اكتب اليوزر ومفتاح الاسترداد المكوّن من 16 كلمة. الكلمات لا تُرسل إلى الخادم؛ تُشتق المصادقة ومفاتيح E2EE على جهازك.</p>
+
+          <label class="field-label" for="login-username">اسم المستخدم</label>
+          <div class="auth-field">
+            <span class="field-prefix">@</span>
+            <input id="login-username" type="text" maxlength="24" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="username">
+          </div>
+
+          <label class="field-label" for="login-phrase">مفتاح الاسترداد — 16 كلمة للحسابات الجديدة</label>
+          <div class="secret-field-wrap">
+            <input id="login-phrase" class="secret-field" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="الصق كلمات الاسترداد هنا بالترتيب">
+            <button id="btn-toggle-login-phrase" type="button" class="mini-btn">إظهار/إخفاء</button>
+          </div>
+
+          <p id="login-error" class="error-message hidden"></p>
+
+          <button id="btn-login" class="btn-primary" disabled>
+            <span class="btn-text">دخول إلى Yeznsap</span>
+            <span class="btn-loader hidden"></span>
+          </button>
+
+          <div class="auth-switch">
+            <span>ما عندك حساب؟</span>
+            <button id="btn-open-register" type="button" class="btn-link">إنشاء حساب جديد</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TWO FACTOR SCREEN -->
+    <div id="twofa-screen" class="screen">
+      <div class="login-container">
+        <div class="brand small">
+          <div class="logo"><img src="logo.svg" width="58" height="58" alt="شعار Yeznsap"></div>
+          <h1>Yeznsap</h1>
+        </div>
+        <div class="login-box">
+          <h2>التحقق بخطوتين</h2>
+          <p class="hint">أدخل رمز TOTP من تطبيق المصادقة، أو أحد رموز الاسترداد.</p>
+          <label class="field-label" for="twofa-code">رمز التحقق</label>
+          <div class="auth-field">
+            <input id="twofa-code" type="text" maxlength="20" autocomplete="one-time-code" inputmode="text" dir="ltr" placeholder="123456 أو ABCDE-FGHIJ">
+          </div>
+          <p id="twofa-error" class="error-message hidden"></p>
+          <button id="btn-twofa-verify" class="btn-primary" disabled>
+            <span class="btn-text">تحقق ودخول</span>
+            <span class="btn-loader hidden"></span>
+          </button>
+          <div class="auth-switch">
+            <button id="btn-twofa-cancel" type="button" class="btn-link">العودة لتسجيل الدخول</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTER SCREEN -->
+    <div id="register-screen" class="screen">
+      <div class="login-container register-container">
+        <div class="brand small">
+          <div class="logo"><img src="logo.svg" width="58" height="58" alt="شعار Yeznsap"></div>
+          <h1>Yeznsap</h1>
+        </div>
+
+        <div class="login-box">
+          <h2>إنشاء حساب</h2>
+          <p class="hint">حسابك = يوزر + مفتاح استرداد خاص من 16 كلمة (128-bit entropy)</p>
+
+          <label class="field-label" for="register-username">اختر اسم المستخدم</label>
+          <div class="auth-field">
+            <span class="field-prefix">@</span>
+            <input id="register-username" type="text" maxlength="24" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="yeznsap_user">
+          </div>
+          <p class="field-help">3–24 حرفًا: إنجليزي صغير، أرقام، نقطة أو _</p>
+
+          <div class="phrase-header">
+            <div>
+              <label class="field-label">مفتاح الدخول</label>
+              <p class="field-help">سيُنشئ جهازك 16 كلمة عشوائية محليًا. مفتاح الاسترداد نفسه لا يُرسل إلى خادم Yeznsap.</p>
+            </div>
+            <button id="btn-generate-phrase" type="button" class="btn-secondary">إنشاء 16 كلمة</button>
+          </div>
+
+          <div id="phrase-panel" class="phrase-panel hidden">
+            <div id="phrase-grid" class="phrase-grid" dir="ltr"></div>
+            <div class="phrase-actions">
+              <button id="btn-copy-phrase" type="button" class="mini-btn">نسخ الكلمات</button>
+              <button id="btn-regenerate-phrase" type="button" class="mini-btn">تغيير الكلمات</button>
+            </div>
+          </div>
+
+          <div class="security-warning">
+            <strong>مهم:</strong> لا تستخدم كلمات محفظة Bitcoin أو أي محفظة حقيقية هنا. هذه الكلمات خاصة بـ Yeznsap فقط، وإذا فقدتها فلن تتمكن من تسجيل الدخول.
+          </div>
+
+          <label class="consent-row" for="phrase-saved">
+            <input type="checkbox" id="phrase-saved">
+            <span>حفظت الكلمات الـ16 في مكان آمن وبنفس الترتيب.</span>
+          </label>
+
+          <div id="phrase-confirm-box" class="phrase-confirm-box hidden">
+            <p class="field-help">للتأكد أنك حفظتها، أخفينا الكلمات. اكتب الكلمات المطلوبة حسب أرقامها:</p>
+            <div id="phrase-confirm-inputs" class="phrase-confirm-inputs"></div>
+          </div>
+
+          <label class="consent-row" for="age-confirmed">
+            <input type="checkbox" id="age-confirmed">
+            <span>أؤكد أنني أستوفي الحد الأدنى للعمر المطلوب لاستخدام الخدمة في بلدي.</span>
+          </label>
+
+          <p id="register-error" class="error-message hidden"></p>
+
+          <button id="btn-register" class="btn-primary" disabled>
+            <span class="btn-text">إنشاء الحساب والدخول</span>
+            <span class="btn-loader hidden"></span>
+          </button>
+
+          <div class="auth-switch">
+            <span>عندك حساب؟</span>
+            <button id="btn-back-login" type="button" class="btn-link">العودة لتسجيل الدخول</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN APP SCREEN -->
+    <div id="main-screen" class="screen">
+      <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <div class="sidebar-header">
+            <div class="user-avatar" id="sidebar-avatar">
+              <span id="sidebar-avatar-text">ي</span>
+            </div>
+            <div class="sidebar-actions">
+              <button id="btn-new-chat-sidebar" class="icon-btn" title="محادثة جديدة">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
+              <button id="btn-security-settings" class="icon-btn" title="الأمان والخصوصية">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" data-tab="chats">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span>الدردشات</span>
+            </a>
+          </nav>
+
+          <button id="btn-logout" class="logout-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            تسجيل الخروج
+          </button>
+        </aside>
+
+        <!-- Chat List -->
+        <div class="chat-list" id="chat-list-panel">
+          <div class="chat-list-header">
+            <h2>Yeznsap</h2>
+            <div class="chat-list-actions">
+              <button id="btn-new-chat-header" class="icon-btn" title="محادثة جديدة">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
+              <button id="btn-focus-chat-search" class="icon-btn" title="بحث">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="search-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" placeholder="ابحث عن @username أو داخل محادثاتك" id="chat-search" autocomplete="off" autocapitalize="none" spellcheck="false">
+          </div>
+
+          <div class="chat-filters"><span class="chat-mode-label">المحادثات المباشرة</span></div>
+
+          <div class="conversations" id="conversations-list">
+            <!-- Empty State -->
+            <div class="empty-state" id="empty-conversations">
+              <div class="empty-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#8696a0" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <h3>لا توجد محادثات حتى الآن</h3>
+              <p>ابدأ محادثة مع أحد مستخدمي Yeznsap</p>
+              <button class="btn-primary" id="btn-start-chat">بدء محادثة</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Window -->
+        <div class="chat-window" id="chat-window">
+          <div class="chat-window-placeholder">
+            <div class="placeholder-content">
+              <div class="logo-large"><img src="logo.svg" width="120" height="120" alt="شعار Yeznsap"></div>
+              <h2>Yeznsap Messenger</h2>
+              <p>اختر محادثة من القائمة أو ابحث عن مستخدم Yeznsap وابدأ المراسلة مباشرة.</p>
+              <div class="encryption-notice">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8696a0" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span>🔒 المحادثات المباشرة مشفّرة من طرف إلى طرف؛ الخادم يخزن Ciphertext فقط للرسائل الجديدة</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- SECURITY & PRIVACY MODAL -->
+  <div id="security-modal" class="security-modal hidden" role="dialog" aria-modal="true" aria-labelledby="security-title">
+    <div class="security-backdrop" id="security-backdrop"></div>
+    <section class="security-panel">
+      <div class="security-panel-header">
+        <div>
+          <p class="eyebrow">Yeznsap Security</p>
+          <h2 id="security-title">الأمان والخصوصية</h2>
+        </div>
+        <button id="btn-close-security" class="icon-btn" aria-label="إغلاق">×</button>
+      </div>
+
+      <div class="security-status-grid">
+        <div class="security-status-card"><strong>E2EE</strong><span>AES-256-GCM للرسائل المباشرة</span></div>
+        <div class="security-status-card"><strong>Device-bound</strong><span>جلسات مرتبطة بالجهاز</span></div>
+        <div class="security-status-card"><strong id="status-2fa">2FA اختياري</strong><span>TOTP + رموز استرداد</span></div>
+        <div class="security-status-card"><strong>30 دقيقة</strong><span>انتهاء الجلسة عند الخمول</span></div>
+      </div>
+
+      <div class="security-section">
+        <div class="section-title-row">
+          <div><h3>الأجهزة والجلسات</h3><p>راجع الأجهزة المتصلة وأنهِ أي جلسة لا تعرفها.</p></div>
+          <button id="btn-revoke-others" class="btn-secondary" type="button">إنهاء الجلسات الأخرى</button>
+        </div>
+        <div id="sessions-list" class="sessions-list"><p class="muted">جارٍ التحميل…</p></div>
+      </div>
+
+      <div class="security-section">
+        <h3>المصادقة الثنائية TOTP</h3>
+        <p class="muted">لا تحتاج رقم هاتف أو بريد. استخدم تطبيق مصادقة مثل 1Password أو Google Authenticator أو Aegis.</p>
+        <div id="totp-disabled-box">
+          <label class="field-label" for="totp-phrase">أكد مفتاح الاسترداد</label>
+          <textarea id="totp-phrase" class="security-input" autocomplete="off" rows="2" dir="ltr" placeholder="Yeznsap recovery key"></textarea>
+          <button id="btn-totp-setup" class="btn-secondary" type="button">بدء إعداد 2FA</button>
+        </div>
+        <div id="totp-setup-box" class="hidden">
+          <p class="muted">أضف المفتاح التالي إلى تطبيق المصادقة، ثم اكتب الرمز المكوّن من 6 أرقام.</p>
+          <code id="totp-secret" class="secret-code"></code>
+          <input id="totp-confirm-code" class="security-input" inputmode="numeric" maxlength="6" dir="ltr" placeholder="123456">
+          <button id="btn-totp-confirm" class="btn-secondary" type="button">تأكيد 2FA</button>
+        </div>
+        <div id="totp-enabled-box" class="hidden">
+          <p class="good-note">✓ المصادقة الثنائية مفعلة.</p>
+          <p class="muted">لتعطيلها، أدخل مفتاح الاسترداد ورمز TOTP أو رمز استرداد.</p>
+          <textarea id="totp-disable-phrase" class="security-input" autocomplete="off" rows="2" dir="ltr" placeholder="Yeznsap recovery key"></textarea>
+          <input id="totp-disable-code" class="security-input" maxlength="20" dir="ltr" placeholder="123456 / backup code">
+          <button id="btn-totp-disable" class="btn-danger-soft" type="button">تعطيل 2FA</button>
+        </div>
+        <div id="backup-codes-box" class="hidden">
+          <h4>رموز الاسترداد — تظهر مرة واحدة</h4>
+          <pre id="backup-codes" class="backup-codes"></pre>
+          <button id="btn-copy-backup-codes" class="mini-btn" type="button">نسخ الرموز</button>
+        </div>
+      </div>
+
+      <div class="security-section">
+        <h3>PIN لقفل التطبيق</h3>
+        <p class="muted">اختياري. يضيف قفلًا للجلسة الحالية. مفتاح الاسترداد يبقى طريقة الاسترداد الأساسية.</p>
+        <textarea id="pin-phrase" class="security-input" autocomplete="off" rows="2" dir="ltr" placeholder="Yeznsap recovery key"></textarea>
+        <input id="pin-value" class="security-input" inputmode="numeric" maxlength="10" dir="ltr" placeholder="PIN من 6 إلى 10 أرقام">
+        <div class="inline-actions">
+          <button id="btn-set-pin" class="btn-secondary" type="button">حفظ PIN</button>
+          <button id="btn-lock-now" class="btn-secondary" type="button">قفل الآن</button>
+          <button id="btn-remove-pin" class="btn-danger-soft" type="button">حذف PIN</button>
+        </div>
+      </div>
+
+      <div class="security-section">
+        <h3>الخصوصية</h3>
+        <div class="settings-grid">
+          <label>آخر ظهور
+            <select id="privacy-last-seen" class="security-input">
+              <option value="everyone">الجميع</option><option value="contacts">جهات الاتصال</option><option value="nobody">لا أحد</option>
+            </select>
+          </label>
+          <label>صورة الملف
+            <select id="privacy-profile-photo" class="security-input">
+              <option value="everyone">الجميع</option><option value="contacts">جهات الاتصال</option><option value="nobody">لا أحد</option>
+            </select>
+          </label>
+          <label>الحالة
+            <select id="privacy-status" class="security-input">
+              <option value="everyone">الجميع</option><option value="contacts">جهات الاتصال</option><option value="nobody">لا أحد</option>
+            </select>
+          </label>
+          <label>حذف الحساب بعد عدم النشاط
+            <select id="privacy-auto-delete" class="security-input">
+              <option value="never">لا تحذف تلقائيًا</option><option value="30">30 يوم</option><option value="90">90 يوم</option><option value="180">180 يوم</option><option value="365">365 يوم</option>
+            </select>
+          </label>
+        </div>
+        <label class="consent-row"><input id="privacy-read-receipts" type="checkbox"><span>إظهار إشعارات القراءة</span></label>
+        <button id="btn-save-privacy" class="btn-secondary" type="button">حفظ إعدادات الخصوصية</button>
+      </div>
+
+      <div class="security-section">
+        <h3>بياناتي وGDPR</h3>
+        <p class="muted">يمكنك تصدير بيانات حسابك أو حذف الحساب نهائيًا.</p>
+        <input id="export-password" class="security-input" type="password" minlength="16" placeholder="كلمة مرور لتشفير ملف التصدير (16+ حرفًا)">
+        <button id="btn-export-encrypted" class="btn-secondary" type="button">تصدير بيانات مشفر AES-256-GCM</button>
+        <hr class="security-divider">
+        <textarea id="delete-phrase" class="security-input" autocomplete="off" rows="2" dir="ltr" placeholder="أدخل مفتاح الاسترداد لتأكيد الحذف"></textarea>
+        <button id="btn-delete-account" class="btn-danger" type="button">حذف الحساب نهائيًا</button>
+      </div>
+
+      <div class="security-section advanced-note">
+        <h3>حالة التشفير الطرفي</h3>
+        <p>المحادثات المباشرة النصية تستخدم E2EE فعليًا: مفتاح AES-256-GCM عشوائي لكل محادثة يُغلّف لكل مستخدم عبر RSA-OAEP 3072-bit، والمفتاح الخاص محفوظ على الخادم فقط بعد تشفيره محليًا بمفتاح الاسترداد. تظهر بصمة مفتاح الطرف الآخر داخل المحادثة ويمكن مقارنتها خارج Yeznsap. هذا الإصدار ليس Signal Protocol ولا Double Ratchet، لذلك Perfect Forward Secrecy وSender Keys للمجموعات ما زالت مرحلة لاحقة.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- PIN LOCK OVERLAY -->
+  <div id="pin-lock-overlay" class="pin-lock-overlay hidden">
+    <div class="pin-lock-card">
+      <img src="logo.svg" width="72" height="72" alt="Yeznsap">
+      <h2>Yeznsap مقفل</h2>
+      <p>أدخل PIN لفتح هذه الجلسة.</p>
+      <input id="unlock-pin" class="security-input" inputmode="numeric" maxlength="10" dir="ltr" placeholder="PIN">
+      <button id="btn-unlock-pin" class="btn-primary" type="button"><span class="btn-text">فتح</span><span class="btn-loader hidden"></span></button>
+      <button id="btn-lock-logout" class="btn-link" type="button">تسجيل الخروج بدلًا من ذلك</button>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <script src="app.js"></script>
+
+</body>
+</html>

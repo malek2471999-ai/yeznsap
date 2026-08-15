@@ -1,0 +1,21 @@
+# Yeznsap v4.5 Production Checklist
+
+- [ ] `npm install` completes from a trusted registry and a lockfile is committed.
+- [ ] `npm test` passes.
+- [ ] `npm audit --omit=dev --audit-level=high` reviewed.
+- [ ] GitHub CodeQL/Dependabot results reviewed.
+- [ ] HTTPS only; `NODE_ENV=production`.
+- [ ] `APP_ORIGIN=https://your-real-domain` set exactly.
+- [ ] `DATA_ENCRYPTION_KEY`, `DATA_INDEX_KEY`, `AUTH_PEPPER` are independent secrets in a Secret Manager.
+- [ ] Encrypted backups tested and restore procedure documented.
+- [ ] Move single-file store to a production datastore before significant scale/multi-instance deployment.
+- [ ] Reverse proxy rate limits and abuse monitoring enabled.
+- [ ] E2EE fingerprints tested on two independent accounts/devices.
+- [ ] Public-key change warning tested and cannot be silently bypassed.
+- [ ] Browser compatibility tested for RSA-OAEP 3072, ECDSA P-256, AES-GCM, PBKDF2, IndexedDB CryptoKey storage.
+- [ ] Signed chat-key agreement verified across two independent accounts and after page reload.
+- [ ] Recovery-key creation/login tested after browser restart.
+- [ ] TOTP/PIN/session revocation tested together with E2EE state.
+- [ ] Independent security review and penetration test completed.
+- [ ] Cryptography review acknowledges that v4.5 is not Double Ratchet/PFS.
+- [ ] Privacy Policy, Terms, deletion/export processes and legal compliance completed.

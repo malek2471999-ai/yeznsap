@@ -1,0 +1,31 @@
+{
+  "name": "yeznsap-e2ee-messenger",
+  "version": "4.5.0",
+  "description": "Yeznsap direct-message E2EE messenger with server-blind recovery authentication, RSA key wrapping, ECDSA-signed key establishment, and AES-256-GCM messages",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "check": "node --check server.js && node --check public/app.js && node --check scripts/setup.js && node --check scripts/rotate-key.js && node --check scripts/source-audit.js && node --check tests/security.test.js && node --check tests/e2ee-webcrypto.test.js && npm run source-audit",
+    "keygen": "node -e \"console.log(require('crypto').randomBytes(32).toString('base64'))\"",
+    "pepper": "node -e \"console.log(require('crypto').randomBytes(32).toString('base64url'))\"",
+    "setup": "node scripts/setup.js",
+    "test": "node --test tests/*.test.js",
+    "verify": "npm run check && npm test",
+    "rotate-key": "node scripts/rotate-key.js",
+    "source-audit": "node scripts/source-audit.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.6.1",
+    "helmet": "^8.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

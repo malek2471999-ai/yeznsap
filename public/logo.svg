@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Yeznsap face logo">
+  <defs>
+    <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffc07a"/>
+      <stop offset="1" stop-color="#f29a54"/>
+    </linearGradient>
+    <linearGradient id="hair" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2d241f"/>
+      <stop offset="1" stop-color="#0f0d0c"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ears -->
+  <ellipse cx="101" cy="273" rx="46" ry="62" fill="url(#skin)" stroke="#9f4f28" stroke-width="8"/>
+  <ellipse cx="411" cy="273" rx="46" ry="62" fill="url(#skin)" stroke="#9f4f28" stroke-width="8"/>
+  <path d="M92 256c18-14 31 5 23 24-6 15-17 26-29 30" fill="none" stroke="#cf7541" stroke-width="8" stroke-linecap="round"/>
+  <path d="M420 256c-18-14-31 5-23 24 6 15 17 26 29 30" fill="none" stroke="#cf7541" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- face -->
+  <path d="M256 84c-87 0-142 67-142 160 0 105 63 190 142 190s142-85 142-190C398 151 343 84 256 84Z" fill="url(#skin)" stroke="#9f4f28" stroke-width="9"/>
+
+  <!-- hair mass -->
+  <path d="M122 206c1-80 30-131 87-158 51-24 119-18 157 17 36 32 39 76 30 123-19-18-46-31-80-36-35-5-68-2-95 10-33 14-60 31-99 44Z" fill="url(#hair)"/>
+
+  <!-- hair streaks -->
+  <path d="M147 152c37-48 86-70 143-70" fill="none" stroke="#493b33" stroke-width="12" stroke-linecap="round"/>
+  <path d="M166 130c45-32 93-44 145-35" fill="none" stroke="#5a4a40" stroke-width="9" stroke-linecap="round"/>
+  <path d="M206 102c51-18 102-10 145 20" fill="none" stroke="#6c5a4e" stroke-width="8" stroke-linecap="round"/>
+  <path d="M252 88c48 0 90 18 122 52" fill="none" stroke="#56473e" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- eyebrows -->
+  <path d="M158 232c26-20 58-22 88-5" fill="none" stroke="#6b3e28" stroke-width="10" stroke-linecap="round"/>
+  <path d="M266 227c29-17 61-15 88 5" fill="none" stroke="#6b3e28" stroke-width="10" stroke-linecap="round"/>
+
+  <!-- eyes -->
+  <path d="M158 263c20-20 56-21 79 0-22 26-59 25-79 0Z" fill="#fff" stroke="#3a241b" stroke-width="5"/>
+  <path d="M275 263c20-20 56-21 79 0-22 26-59 25-79 0Z" fill="#fff" stroke="#3a241b" stroke-width="5"/>
+  <circle cx="199" cy="264" r="15" fill="#3b2418"/>
+  <circle cx="316" cy="264" r="15" fill="#3b2418"/>
+  <circle cx="203" cy="259" r="5" fill="#fff"/>
+  <circle cx="320" cy="259" r="5" fill="#fff"/>
+
+  <!-- nose -->
+  <path d="M256 271c-7 31-10 51 5 59" fill="none" stroke="#d97943" stroke-width="7" stroke-linecap="round"/>
+  <path d="M239 337c11 6 24 6 35 0" fill="none" stroke="#b95e35" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- smile -->
+  <path d="M201 363c31 25 79 25 110 0" fill="none" stroke="#9e3f35" stroke-width="8" stroke-linecap="round"/>
+  <path d="M216 369c25 13 55 13 80 0" fill="none" stroke="#e77a70" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- subtle cheeks -->
+  <ellipse cx="167" cy="327" rx="24" ry="10" fill="#ec8b5a" opacity=".28"/>
+  <ellipse cx="345" cy="327" rx="24" ry="10" fill="#ec8b5a" opacity=".28"/>
+</svg>
